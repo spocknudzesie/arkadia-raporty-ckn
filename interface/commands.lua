@@ -83,7 +83,7 @@ end
 
 
 function scripts.rckn.interface:cmdAddCategory(cat)
-    print("ADD CATEGOR CALLED with " .. cat)
+    -- print("ADD CATEGOR CALLED with " .. cat)
     local category = Category:new({name=cat, points=1})
 
     if category:save() then
@@ -98,7 +98,7 @@ end
 
 
 function scripts.rckn.interface:cmdAddPerson(name)
-    print("ADD PERSON CALLED with " .. name)
+    -- print("ADD PERSON CALLED with " .. name)
     name = name:lower()
     local person = Person:new({name=name})
 
@@ -116,7 +116,7 @@ end
 function scripts.rckn.interface:cmdAddDelivery(date, description)
     local delivery = Delivery:new({date=date, description=description})
 
-    print(dump_table(delivery._attributes))
+    -- print(dump_table(delivery._attributes))
     local res = delivery:save()
 
     if res then

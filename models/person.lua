@@ -73,3 +73,28 @@ function Person:details(filter)
 end
 
 
+function Person:calculateReward(total_points)
+    local settings = scripts.rckn.settings
+    -- print(dump_table(settings))
+    local base = settings.baza
+
+    if not total_points or total_points <= 0 then
+        return 0
+    end
+
+    if total_points <= settings.prog then
+        return base
+    end
+-- 
+    -- print("Lacznie punktow: " .. total_points)
+    local excess = math.max(0, total_points - settings.prog)
+    -- print("Nadmiarowych punktow do nagrody: " .. excess)
+    
+    local steps = math.ceil(excess/settings.skok)
+    -- print("Stopni ponad minimum: " .. steps)
+
+    local reward = base + settings.bonus * steps
+    -- print("Do wyplaty: " .. base .. " + " .. settings.bonus*steps)
+    
+    return reward
+end

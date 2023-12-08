@@ -88,7 +88,7 @@ function scripts.rckn.db:formatQuery(query, ...)
             sub = "'%s'"
         elseif type(token) == 'number' then
             local i, f = math.modf(token)
-            print(dump_table({token, i, f}))
+            -- print(dump_table({token, i, f}))
             if f == 0 then
                 sub = "%d"
             else
@@ -179,7 +179,7 @@ function scripts.rckn.db:addDelivery(date, description)
         return self:q([[SELECT * FROM deliveries ORDER BY _row_id DESC LIMIT 1]])[1]
     end
 
-    print('not ok')
+    -- print('not ok')
     return self:error(err)
 end
 

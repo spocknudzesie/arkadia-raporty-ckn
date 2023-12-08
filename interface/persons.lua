@@ -134,33 +134,43 @@ function scripts.rckn.interface:printPersons()
         -- print(dump_table(dets, true))
         -- print("----------")
 
-        self:printToConsole(string.format(
-            ' %2d | #7f7f7fid %2d#r | ',
-            i,
-            dets._row_id))
-
-        self.console:hechoLink(string.format(
-            personColor .. '\r%-11s#r',
-            dets.name:capitalize()), function()
-                self:printPerson(dets._row_id)
-            end, "Historia osoby imieniem " .. dets.name:capitalize(), true)
-            -- dets.name:gsub("^%l", string.upper),
-            -- dets.deliveries,
-            -- dets.total_points))
-
-            -- %-11s | %3d wypraw(y) | %5.2f pkt\n',
-
+        if not (self.filter and diff == -1) then
             self:printToConsole(string.format(
-                " | %3d dostaw(y) | ", dets.deliveries_count))
+                ' %2d | #7f7f7fid %2d#r | ',
+                i,
+                dets._row_id))
+
+            self.console:hechoLink(string.format(
+                personColor .. '\r%-11s#r',
+                dets.name:capitalize()), function()
+                    self:printPerson(dets._row_id)
+                end, "Historia osoby imieniem " .. dets.name:capitalize(), true)
+                -- dets.name:gsub("^%l", string.upper),
+                -- dets.deliveries,
+                -- dets.total_points))
+
+                -- %-11s | %3d wypraw(y) | %5.2f pkt\n',
+
+                self:printToConsole(string.format(
+                    " | %3d dostaw(y) | ", dets.deliveries_count))
+                    
+                self.console:decho(string.format('%s%5.2f pkt razem',
+                    pointsColor(dets.total_points), dets.total_points))
+
                 
-            self.console:decho(string.format('%s%5.2f pkt razem',
-                pointsColor(dets.total_points), dets.total_points))
+            if diff > -1 then
+                self:printToConsole(string.format(' | ostatnia dostawa: %3d dni temu', diff))
+            end
 
-            
-        if diff > -1 then
-            self:printToConsole(string.format(' | ostatnia dostawa: %3d dni temu', diff))
+            self:printToConsole("\n")
         end
+    end
 
-        self:printToConsole("\n")
+    if self.filter then
+        self:printToConsole('\n')
+        self.console:hechoLink('\t[GENERUJ RAPORT]', function()
+            -- print("GENERUJEMY RAPORT")
+            self:createMassReport(persons)
+        end, 'Wygeneruj raport dla tego zakresu czasowego', true)
     end
 end

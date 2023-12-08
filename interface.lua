@@ -283,14 +283,15 @@ function scripts.rckn.interface:init()
     self:printMenuBar()
     self:printSubMenuBar()
     -- self.subMenuBar:echo("SUBMENU")
-    self.titleBar:echo("TITLE BAR TEST")
+    -- self.titleBar:echo("TITLE BAR TEST")
     -- self.titleBar:setStyleSheet([[
     --     border: 5px solid red
     -- ]])
-    self.console:echo("CONSOLE TEST TEEST 2")
+    -- self.console:echo("CONSOLE TEST TEEST 2")
     -- self.output:echo("OUTPUT TEST")
 
     self:setupCommandLine()
+    self:menuClicked('Pomoc')
     -- self:selectSection('pomoc')
 end
 

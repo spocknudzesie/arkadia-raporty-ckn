@@ -235,7 +235,7 @@ function scripts.rckn.interface:printDeliveries()
 
     self:printSubMenuBar(subMenuOptions, 'Dostawy: ')
     self:setTitle(title)
-    self.console:clear()
+    self:printToConsole("\n", true)
 
     local printLine = function(i, delivery)
 
