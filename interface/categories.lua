@@ -27,7 +27,7 @@ function scripts.rckn.interface:displayCategories()
         ..string.rep('-', 2)..'-+-'
         ..string.rep('-', maxLen)..'-+-'
         ..string.rep('-', 6)..'-+-'
-        ..string.rep('-', 5)..'-+'..'\n')
+        ..string.rep('-', 5)..'-|'..'\n')
 
     for i, category in ipairs(categories) do
         forOnePoint = 1/category.points

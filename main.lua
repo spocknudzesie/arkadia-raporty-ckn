@@ -74,7 +74,7 @@ function scripts.rckn:load()
         self.settings = data
     end
 
-    self:msg('ok', 'Ustawienia wczytane: ' .. dump_table(self.settings, true))
+    -- self:msg('ok', 'Ustawienia wczytane: ' .. dump_table(self.settings, true))
 end
 
 

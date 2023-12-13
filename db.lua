@@ -21,10 +21,13 @@ function scripts.rckn:initDb()
             delivery_id = 0,
             category_id = 0,
             count = 0,
+            _unique = {{"delivery_id", "category_id"}}
         },
         delivery_persons={
             delivery_id = 0,
             person_id = 0,
+            extra_points = 0,
+            _unique = {{"delivery_id", "person_id"}}
         }
     })
     self:msg('ok', 'Baza zaladowana')
@@ -77,8 +80,8 @@ end
 function scripts.rckn.db:formatQuery(query, ...)
     local i = 0
     -- scripts.rckn:msg('debug', 'Formatting query:\n%s', query)
+    -- scripts.rckn:msg('debug', 'With args: ' .. dump_table(arg, true))
     -- print(#arg)
-    -- print(dump_table(arg, true))
     query = query:gsub('?', function()
         local token, sub
         i = i+1

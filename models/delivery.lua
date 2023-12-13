@@ -24,20 +24,54 @@ end
 
 
 function Delivery:overview()
+    -- return self.db:q([[
+    --     SELECT
+    --         d._row_id as id, d.description, d.date,
+    --         SUM(dc.count * c.points) AS total_points
+    --     FROM
+    --         deliveries AS d
+    --     JOIN
+    --         delivery_categories AS dc ON dc.delivery_id = d._row_id
+    --     JOIN
+    --         categories AS c ON c._row_id = dc.category_id
+    --     LEFT JOIN
+    --         delivery_persons AS dp ON dp.delivery_id = d._row_id
+    --     WHERE
+    --         d._row_id = ?
+    --     GROUP BY
+    --         d._row_id
+    -- ]], self._row_id)
     return self.db:q([[
         SELECT
-            d._row_id as id, d.description, d.date,
-            SUM(dc.count * c.points) AS total_points
-        FROM
-            deliveries AS d
-        JOIN
-            delivery_categories AS dc ON dc.delivery_id = d._row_id
-        JOIN
-            categories AS c ON c._row_id = dc.category_id
-        WHERE
-            d._row_id = ?
-        GROUP BY
-            d._row_id
+        d._row_id as id,
+        d.description,
+        d.date,
+        COALESCE(total_points.total, 0) AS total_points,
+        COALESCE(total_extra_points.total_extra, 0) AS total_extra_points
+    FROM
+        deliveries AS d
+    LEFT JOIN
+        (SELECT
+             dc.delivery_id,
+             SUM(dc.count * c.points) AS total
+         FROM
+             delivery_categories AS dc
+         JOIN
+             categories AS c ON c._row_id = dc.category_id
+         GROUP BY
+             dc.delivery_id
+        ) AS total_points ON total_points.delivery_id = d._row_id
+    LEFT JOIN
+        (SELECT
+             dp.delivery_id,
+             SUM(dp.extra_points) AS total_extra
+         FROM
+             delivery_persons AS dp
+         GROUP BY
+             dp.delivery_id
+        ) AS total_extra_points ON total_extra_points.delivery_id = d._row_id
+    WHERE
+        d._row_id = ?        
     ]], self._row_id)
 end
 
@@ -104,7 +138,8 @@ end
 function Delivery:getPersons()
     local rows = self.db:q([[
         SELECT 
-            p._row_id AS person_id, p.name AS name
+            p._row_id AS person_id, p.name AS name,
+            dp.extra_points AS extra_points
         FROM
             delivery_persons AS dp
         JOIN
@@ -186,7 +221,11 @@ function Delivery:friendlyTable()
             JOIN categories AS c ON c._row_id = dc.category_id
             WHERE dc.delivery_id = d._row_id
         ) AS total_points,
-
+        (
+            SELECT SUM(dp.extra_points)
+            FROM delivery_persons AS dp
+            WHERE dp.delivery_id = d._row_id
+        ) AS total_extra_points,
         GROUP_CONCAT(p.name, ', ') AS participants
     FROM
         deliveries AS d

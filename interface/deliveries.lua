@@ -58,19 +58,43 @@ function scripts.rckn.interface:printDelivery(id)
                 function(c) return string.format("'%s'", c['name']) end), ', ')))
 
     -- print(dump_table(allCategories, true))
-    self:printToConsole('\n(+) Uczestnicy dostawy (' .. #persons .. '): ', true)
+    self:printToConsole('\n(+) Uczestnicy dostawy (' .. #persons .. '):\n', true)
 
     local j = 1
     -- print("#PERSONS="..#persons)
     
     for i, p in spairs(persons, function(t,a,b) return t[a].name < t[b].name end) do
         -- print("i="..i..', p='..p.name)
-        
-        self.console:hechoLink(string.format("#ffffff%s#r ", p.name:capitalize()), function()
+        self:printToConsole('  - ')
+        self.console:hechoLink(string.format("#ffffff%-11s#r ", p.name:capitalize()), function()
             self:printPerson(p.person_id)
         end, "Przejdz do osoby imieniem " .. p.name:capitalize(), true)
 
-        self.console:hechoLink('#dd0000(-)#r', function()
+        local extraPointsLabel = '+'
+        local color = '#00aa00'
+        local number
+
+        if p.extra_points < 0 then
+            extraPointsLabel = ''
+            color = '#aa0000'
+        end
+
+        number = string.format('%s%d', extraPointsLabel, p.extra_points)
+
+        self:printToConsole(string.format('%s%4s#r pkt ',color, number))
+
+        for _, m in ipairs(mods) do
+            self:printModButton(m, function()
+                local dp = DeliveryPerson:findBy({delivery_id=id, person_id=p.person_id})
+                dp:setAttribute('extra_points', dp.extra_points + m)
+                self:printDelivery(id)
+            end)
+            self:printToConsole(' ')
+        end
+
+        self:printToConsole(' | ')
+
+        self.console:hechoLink('#dd0000[USUN]#r', function()
             local action = 'delete person ' .. p.person_id .. ' from delivery ' .. delivery._row_id
             -- print("ACTION="..action .. ", #p="..#persons)
             -- print(dump_table(self.confirmations, true))
@@ -97,7 +121,7 @@ function scripts.rckn.interface:printDelivery(id)
                     
         end, "Usun osobe imieniem " .. p.name:capitalize() .. " z dostawy " .. delivery._row_id, true)
         if j < #persons then
-            self:text(', ')
+            self:text('\n')
         end
         j = j+1
     end
@@ -195,6 +219,8 @@ function scripts.rckn.interface:printDelivery(id)
     if details and details.total_points then
         self:text(string.format('#7fff7f%-22s   %5.2f#r\n', ' RAZEM PUNKTOW', details.total_points))
         self:text(string.format('#7fff7f%-22s   %5.2f#r\n', ' PUNKTOW NA OSOBE', details.total_points/#persons))
+        self:text('\n')
+        self:text(string.format('#aaaa00%-22s   %5.2f#r\n', ' OSOBISTE PUNKTY', details.total_extra_points))
     end
 end
 

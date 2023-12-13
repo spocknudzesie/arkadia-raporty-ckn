@@ -50,8 +50,24 @@ function Model:get(id)
 end
 
 
-function Model:findBy(conditions)
-    local row = self.db:q("SELECT * FROM " .. self._tableName .. " WHERE (" .. conditions .. ") LIMIT 1")
+function Model:findBy(conditions, junction)
+    local clause = ''
+
+    junction = junction or 'AND'
+    
+    if type(conditions) == 'table' then
+        local partial = {}
+        
+        for k, v in pairs(conditions) do
+            table.insert(partial, string.format("%s='%s'", k, v))
+        end
+
+        clause = table.concat(partial, ' ' .. junction .. ' ')
+    else
+        clause = conditions
+    end
+
+    local row = self.db:q("SELECT * FROM " .. self._tableName .. " WHERE (" ..clause .. ") LIMIT 1")
 
     if row and #row > 0 then
         return self:new(row[1])
@@ -62,7 +78,23 @@ end
 
 
 function Model:where(conditions)
-    local row = self.db:q("SELECT * FROM " .. self._tableName .. " WHERE (" .. conditions .. ") ")
+    local clause = ''
+
+    junction = junction or 'AND'
+    
+    if type(conditions) == 'table' then
+        local partial = {}
+        
+        for k, v in pairs(conditions) do
+            table.insert(partial, string.format("%s='%s'", k, v))
+        end
+
+        clause = table.concat(partial, ' ' .. junction .. ' ')
+    else
+        clause = conditions
+    end
+
+    local row = self.db:q("SELECT * FROM " .. self._tableName .. " WHERE (" .. clause .. ") ")
 
     if row and #row > 0 then
         return self:map(row, function(r)
