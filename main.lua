@@ -115,7 +115,7 @@ end
 
 tempTimer(0.0, function()
     scripts.rckn:msg('info', "Wczytywanie modulu RCKN")
+    scripts.plugins_update_check:github_check_version('arkadia-raporty-ckn', 'spocknudzesie')
     scripts.rckn:init()
 end)
 
-scripts.plugins_update_check:github_check_version('arkadia-raporty-ckn', 'spocknudzesie')
