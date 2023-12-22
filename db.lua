@@ -62,6 +62,11 @@ function scripts.rckn.db:query(text)
     if not res then
         return self:error(err)
     end
+
+    local d = db:get_database(scripts.rckn.db_path)
+    d:_end()
+    d:_commit()
+
     return db:cursorToTable(res)
 end
 
