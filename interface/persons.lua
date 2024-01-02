@@ -36,7 +36,8 @@ function scripts.rckn.interface:printPerson(id)
         self:setTitle(person.name:capitalize() .. ' - historia dostaw')
     end
 
-    self:printToConsole(string.format("\n(+) Lacznie punktow z dostaw: #ffffff%5.2f pkt#r\n", details.total_points), true)
+    self:printToConsole(string.format("\n(+) Lacznie punktow z dostaw:   #ffffff%5.2f pkt#r\n", details.total_points), true)
+    self:printToConsole(string.format("(+) Lacznie punktow bonusowych: #ffffff%5.2f pkt#r\n", details.extra_points))
     self:printToConsole(string.format("(+) Dostawy:\n\n"))
 
     self:printToConsole(string.format('     id | %10s | Punkty | Bonus | Opis\n', 'Data'))

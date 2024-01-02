@@ -28,23 +28,27 @@ function scripts.rckn.interface:createMassReport(reportablePersons)
     scripts.rckn:msg('ok', 'Raport z dostaw za okres %s do %s', self.filter.from, self.filter.to)
 
     for i, person in ipairs(reportablePersons) do
-        local points, reward, personal_points
+        local points, reward, personal_points, total_points
         local name
 
-        details[i] = person:details()
+        details[i] = person:details(self.filter)
+        -- print(dump_table(details))
         
         points = math.floor(details[i].total_points)
         personal_points = math.floor(details[i].extra_points)
+        total_points = points + personal_points
 
-        reward = person:calculateReward(points + personal_points)
+        -- print(string.format("%s - %.2f | %.2f - %.2f | %.2f", details[i].name, details[i].total_points, points, personal_points, details[i].extra_points))
+
+        reward = person:calculateReward(total_points)
         name = details[i].name:capitalize()
 
         details[i].reward = reward
         
         if points > 0 or personal_points > 0 then
-            groupedByPoints[points] = groupedByPoints[points] or {}
-            table.insert(groupedByPoints[points], name)
-            persons[name] = points + personal_points
+            groupedByPoints[total_points] = groupedByPoints[total_points] or {}
+            table.insert(groupedByPoints[total_points], name)
+            persons[name] = total_points
         end
 
         if reward > 0 then
