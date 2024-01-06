@@ -85,24 +85,22 @@ end
 
 
 function scripts.rckn:reload(debug)
-    -- print("RELOADING")
     local p = self.pluginName
 
     if self.reloadKey then killKey(self.reloadKey) end
 
     self.reloadKey = tempKey(mudlet.keymodifier.Control, mudlet.key.R, function()
         -- print("KEY BOUND")
-        self:reload()
+        self:reload(debug)
     end)
-
-    -- print("UNTER?")
-    -- if self.interface and self.interface.window then
-    --     print("INTERFANCE")
-    --     self.interface.window:clear()
-    -- end
     
     scripts[self.name] = nil
-    load_plugin('dev/' .. p)
+
+    if debug then
+        load_plugin('dev/' .. p)
+    else
+        load_plugin(p)
+    end
 end
 
 

@@ -18,6 +18,7 @@ function scripts.rckn.interface:createMassReport(reportablePersons)
     local details = {}
     local groupedByPoints = {}
     local groupedByRewards = {}
+    local rewards = {}
     local persons = {}
 
     if not self.filter then
@@ -34,8 +35,8 @@ function scripts.rckn.interface:createMassReport(reportablePersons)
         details[i] = person:details(self.filter)
         -- print(dump_table(details))
         
-        points = math.floor(details[i].total_points)
-        personal_points = math.floor(details[i].extra_points)
+        points = math.ceil(details[i].total_points)
+        personal_points = math.ceil(details[i].extra_points)
         total_points = points + personal_points
 
         -- print(string.format("%s - %.2f | %.2f - %.2f | %.2f", details[i].name, details[i].total_points, points, personal_points, details[i].extra_points))
@@ -49,7 +50,9 @@ function scripts.rckn.interface:createMassReport(reportablePersons)
             groupedByPoints[total_points] = groupedByPoints[total_points] or {}
             table.insert(groupedByPoints[total_points], name)
             persons[name] = total_points
+            rewards[name] = person:calculateReward(total_points)
         end
+
 
         if reward > 0 then
             groupedByRewards[reward] = groupedByRewards[reward] or {}
@@ -61,6 +64,9 @@ function scripts.rckn.interface:createMassReport(reportablePersons)
     local pointKeys = table.keys(groupedByPoints)
     local rewardKeys = table.keys(groupedByRewards)
     local names = table.keys(persons)
+
+    -- print(dump_table(pointKeys))
+    -- print(dump_table(rewardKeys))
     
     table.sort(pointKeys, function(a,b) return a>b end)
     table.sort(rewardKeys, function(a,b) return a>b end)
@@ -69,19 +75,36 @@ function scripts.rckn.interface:createMassReport(reportablePersons)
     -- print("POINT KES")
     -- print(dump_table(pointKeys))    
 
+    -- echo(string.format("Punktacja za okres %s do %s (wg gnomiej miary):\n\n", self.filter.from, self.filter.to))
+
+    -- for _, name in ipairs(names) do
+    --     echo(string.format('%-11s - %3d pkt\n', name, persons[name]))
+    -- end
+
+    -- echo('\n\n')
+
+    -- echo('Oto kwoty wynagrodzen do odebrania w zachodniej sortowni:\n\n')
+
+    -- for _, pts in ipairs(rewardKeys) do
+    --     echo(string.format('%s - %d %s\n',
+    --     table.concat(groupedByRewards[pts], ', '),
+    --     pts/100,
+    --     self:rewardToString(pts)))
+    -- end
+
+    -- echo("---------\n")
+
     echo(string.format("Punktacja za okres %s do %s (wg gnomiej miary):\n\n", self.filter.from, self.filter.to))
 
+    echo(string.format("%11s | %6s | %s\n", "Zbrojny/a", "Punkty", "Zaplata"))
+    echo("------------|--------|-------------------------\n")
+
     for _, name in ipairs(names) do
-        echo(string.format('%-11s - %3d pkt\n', name, persons[name]))
+        echo(string.format("%11s | %6d | %3d %s\n",
+            name, persons[name], rewards[name]/100, self:rewardToString(rewards[name])))
     end
 
-    echo('\n\n')
-
-    echo('Oto kwoty wynagrodzen do odebrania w zachodniej sortowni:\n\n')
-
-    for _, pts in ipairs(rewardKeys) do
-        echo(string.format('%s - %d %s\n', table.concat(groupedByRewards[pts], ', '), pts/100, self:rewardToString(pts)))
-    end
+    echo('\nPodane wynagrodzenia sa do odebrania w zachodniej sortowni.\n')
 
     -- print(dump_table(groupedByPoints))
 
