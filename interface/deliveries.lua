@@ -134,21 +134,28 @@ function scripts.rckn.interface:printDelivery(id)
         
         j = 1
         for i, p in spairs(missingPersons, function(t,a,b) return t[a].name < t[b].name end) do
-            self.console:hechoLink(string.format("#7f7f7f%11s#r", p.name:capitalize()), function()
-                self:printPerson(p.person_id)
-            end, "Przejdz do osoby imieniem " .. p.name:capitalize(), true)
+            self.console:hechoLink(string.format("#7f7f7f%11s#r", p.name:capitalize()),
+                function()
+                    self:printPerson(p.person_id)
+                end,
+            "Przejdz do osoby imieniem " .. p.name:capitalize(), true)
             
             self:printToConsole(' ')
             
-            self.console:hechoLink('#00dd00(+)#r', function()
-                if delivery:addPersonToDelivery(p.name) then
-                    self:printToOutput(string.format(
-                        'Dodano osobe imieniem %s do dostawy nr %s z dnia %s (%s)\n',
+            self.console:hechoLink('#00dd00(+)#r',
+                function()
+                    local res = delivery:addPersonToDelivery(p.name)
+                    if res then
+                        self:printToOutput(string.format(
+                            'Dodano osobe imieniem %s do dostawy nr %s z dnia %s (%s)\n',
                             p.name:capitalize(), delivery._row_id, delivery.date, delivery.description),
-                            false, 'ok')
-                        end
-                        self:printDelivery(id)
-                    end, "Dodaj osobe imieniem " .. p.name:capitalize(), true)
+                        false, 'ok')
+                    else
+                        self:printToOutput(string.format("BLAD dodawania osoby imieniem %s\n", p.name:capitalize()), false, 'error')
+                    end
+                    self:printDelivery(id)
+                end,
+            "Dodaj osobe imieniem " .. p.name:capitalize(), true)
                     
             if j < #missingPersons then
                 self:text(", ")

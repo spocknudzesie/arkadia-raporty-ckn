@@ -9,7 +9,7 @@ function scripts.rckn:initDb()
         deliveries={
             date = "",
             description = "",
-            _unique = {{"date", "description"}}
+            _unique = {{"description"}}
         },
         categories={
             name = "",
